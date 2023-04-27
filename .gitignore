@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/23SUProject/Release
+/23SUProject/x64/Debug
+/23SUProject/.vs/23SUProject/v17
+/23SUProject/.vs/23SUProject/FileContentIndex
+/23SUProject/Debug
