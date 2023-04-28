@@ -12,6 +12,8 @@
 #define new DEBUG_NEW
 #endif
 
+CString productNames[] = { "Tortillas", "Refried Beans", "Salsa", "Nacho Chips", "Jalapenos", "Green Peppers", "Monterey Jack Cheese", "Rice", "Ground Beef", "Eggs" };
+CString currentInventory[] = { "256", "402", "515", "712", "90,210", "1024", "32,767", "911", "420", "4450" };
 
 // CAboutDlg dialog used for App About
 
@@ -53,6 +55,9 @@ END_MESSAGE_MAP()
 C23SUProjectDlg::C23SUProjectDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_23SUPROJECT_DIALOG, pParent)
 	, m_strDebug(_T(""))
+	, m_strProductNumber(_T(""))
+	, m_strProductName(_T(""))
+	, m_strInventory(_T(""))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -61,12 +66,17 @@ void C23SUProjectDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Text(pDX, IDC_STATIC_DEBUG, m_strDebug);
+	DDX_Text(pDX, IDC_EDIT_PRODUCT_NUMBER, m_strProductNumber);
+	DDV_MaxChars(pDX, m_strProductNumber, 10);
+	DDX_Text(pDX, IDC_STATIC_PRODUCT_NAME, m_strProductName);
+	DDX_Text(pDX, IDC_STATIC_INVENTORY, m_strInventory);
 }
 
 BEGIN_MESSAGE_MAP(C23SUProjectDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
+	ON_BN_CLICKED(IDOK, &C23SUProjectDlg::OnBnClickedOk)
 END_MESSAGE_MAP()
 
 
@@ -160,3 +170,65 @@ HCURSOR C23SUProjectDlg::OnQueryDragIcon()
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
+
+
+void C23SUProjectDlg::OnBnClickedOk()
+{
+	// TODO: Add your control notification handler code here
+	//CDialogEx::OnOK();
+	UpdateData(true);	// this pulls the text entered in the "Product Number" field into m_strProductNumber
+	if (m_strProductNumber.GetLength() > 0)
+		WorkerFunction();
+	else
+		MessageBox("Hola amigo, enter a product number, por favor");
+
+}
+
+
+int C23SUProjectDlg::WorkerFunction()
+{
+	// TODO: Add your implementation code here.
+	ULONGLONG ticksStart = GetTickCount64();
+	ULONGLONG ticksEnd;
+
+	//
+	// generate a random number as an index into the product and quantity arrays
+	//
+	char tmp[128];
+	srand((unsigned int)time(0));
+	int x = rand() % 10;
+
+	//
+	// just a loop
+	//
+	for (int n = 0; n < m_strProductNumber.GetLength(); n++)
+	{
+		_strtime_s(tmp, sizeof(tmp));
+		OutputDebugString(tmp);
+		sprintf_s(tmp, " debug string, x=%d, n=%d\n", x, n);
+		OutputDebugString(tmp);
+	} // for
+
+	//
+	// move values from arrays to control variables
+	//
+	m_strProductName = productNames[x];
+	m_strInventory = currentInventory[x];
+
+	//
+	// move the values in the above variables to 
+	// their corresponding dialog controls for display
+	//
+	UpdateData(false);
+
+	//
+	// calculate ticks since beginning of function
+	// a large differnce indicates debugging or other
+	// process impacting execution
+	//
+	ticksEnd = GetTickCount64();
+	sprintf_s(tmp, "WorkerFunction elapsed ticks %I64d\n", ticksEnd - ticksStart);
+	OutputDebugString(tmp);
+
+	return 0;
+}

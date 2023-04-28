@@ -33,4 +33,9 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	CString m_strDebug;
+	afx_msg void OnBnClickedOk();
+	int WorkerFunction();
+	CString m_strProductNumber;
+	CString m_strProductName;
+	CString m_strInventory;
 };
