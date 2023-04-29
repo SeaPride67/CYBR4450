@@ -259,6 +259,17 @@ int C23SUProjectDlg::ValidationFunction()
 	int n = 0;
 	int ch;
 
+	//
+	// calculate check digit, positions - through len-1
+	// multiply even positions by 2, add to sum
+	// add odd positions to sum
+	// at end, mod 10 the sum
+	// subtract the remainder from 10
+	// the resulting value should equal last digit in number
+	// return the number, which will be the index into the
+	//  product and inventory arrays, else display message
+	//  and return -1
+	//
 	for (int x = 0; x < m_strProductNumber.GetLength() - 1; x++)
 	{
 		ch = m_strProductNumber.GetAt(x) - '0';
