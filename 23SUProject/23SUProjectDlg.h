@@ -38,4 +38,6 @@ public:
 	CString m_strProductNumber;
 	CString m_strProductName;
 	CString m_strInventory;
+protected:
+	int ValidationFunction();
 };

@@ -12,6 +12,8 @@
 #define new DEBUG_NEW
 #endif
 
+#define MSGBOX_TITLE "Los Pollos Hermanos"
+
 CString productNames[] = { "Tortillas", "Refried Beans", "Salsa", "Nacho Chips", "Jalapenos", "Green Peppers", "Monterey Jack Cheese", "Rice", "Ground Beef", "Eggs" };
 CString currentInventory[] = { "256", "402", "515", "712", "90,210", "1024", "32,767", "911", "420", "4450" };
 
@@ -177,10 +179,13 @@ void C23SUProjectDlg::OnBnClickedOk()
 	// TODO: Add your control notification handler code here
 	//CDialogEx::OnOK();
 	UpdateData(true);	// this pulls the text entered in the "Product Number" field into m_strProductNumber
-	if (m_strProductNumber.GetLength() > 0)
-		WorkerFunction();
-	else
-		MessageBox("Hola amigo, enter a product number, por favor");
+	if (m_strProductNumber.GetLength() <= 0)
+	{
+		MessageBox("Hola amigo, enter a product number, por favor", MSGBOX_TITLE);
+		return;
+	} 
+
+	WorkerFunction();
 
 }
 
@@ -188,15 +193,17 @@ void C23SUProjectDlg::OnBnClickedOk()
 int C23SUProjectDlg::WorkerFunction()
 {
 	// TODO: Add your implementation code here.
+	// 
+	//
+	// generate a random number 
+	//
+	srand((unsigned int)time(0));
+
 	ULONGLONG ticksStart = GetTickCount64();
 	ULONGLONG ticksEnd;
-
-	//
-	// generate a random number as an index into the product and quantity arrays
-	//
-	char tmp[128];
-	srand((unsigned int)time(0));
+	int idx = 0;
 	int x = rand() % 10;
+	char tmp[128];
 
 	//
 	// just a loop
@@ -205,18 +212,29 @@ int C23SUProjectDlg::WorkerFunction()
 	{
 		_strtime_s(tmp, sizeof(tmp));
 		OutputDebugString(tmp);
-		sprintf_s(tmp, " debug string, x=%d, n=%d\n", x, n);
+		sprintf_s(tmp, sizeof(tmp), " debug string, x=%d, n=%d\n", x, n);
 		OutputDebugString(tmp);
 	} // for
 
 	//
-	// move values from arrays to control variables
+	// Reset display values
 	//
-	m_strProductName = productNames[x];
-	m_strInventory = currentInventory[x];
+	m_strProductName = "";
+	m_strInventory = "";
 
 	//
-	// move the values in the above variables to 
+	// Validate product number
+	//
+	idx = ValidationFunction();
+	if (idx != -1)
+	{
+		// move values from arrays to control variables
+		m_strProductName = productNames[idx];
+		m_strInventory = currentInventory[idx];
+	} // if
+
+	//
+	// moves the value from the display variables to
 	// their corresponding dialog controls for display
 	//
 	UpdateData(false);
@@ -227,8 +245,42 @@ int C23SUProjectDlg::WorkerFunction()
 	// process impacting execution
 	//
 	ticksEnd = GetTickCount64();
-	sprintf_s(tmp, "WorkerFunction elapsed ticks %I64d\n", ticksEnd - ticksStart);
+	sprintf_s(tmp, sizeof(tmp), "WorkerFunction elapsed ticks %I64d\n", ticksEnd - ticksStart);
 	OutputDebugString(tmp);
 
 	return 0;
+}
+
+
+int C23SUProjectDlg::ValidationFunction()
+{
+	// TODO: Add your implementation code here.
+	int sum = 0;
+	int n = 0;
+	int ch;
+
+	for (int x = 0; x < m_strProductNumber.GetLength() - 1; x++)
+	{
+		ch = m_strProductNumber.GetAt(x) - '0';
+		if (x % 2 == 0)
+		{
+			n = ch * 2;
+			if (n > 9) n -= 9;
+			sum += n;
+		}
+		else
+		{
+			sum += ch;
+		}
+	}
+
+	n = sum % 10;
+	ch = m_strProductNumber.GetAt(m_strProductNumber.GetLength() - 1) - '0';
+
+	if (10 - n == ch)
+		return(ch);
+
+	MessageBox("Oh no mi amigo, that is not a valid product number, retry, por favor", MSGBOX_TITLE);
+
+	return(-1);
 }
