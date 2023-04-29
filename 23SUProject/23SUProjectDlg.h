@@ -40,4 +40,7 @@ public:
 	CString m_strInventory;
 protected:
 	int ValidationFunction();
+	int CalcCheckDigit(int sumIn);
+	int CalcEven(int digitIn);
+	int CalcOdd(int digitIn);
 };
