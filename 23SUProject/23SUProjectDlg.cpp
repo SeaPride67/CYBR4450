@@ -12,7 +12,7 @@
 #define new DEBUG_NEW
 #endif
 
-#define MSGBOX_TITLE "Los Pollos Hermanos"
+#define MSGBOX_TITLE "Los Pollos Hermanos - Branch1"
 
 CString productNames[] = { "Tortillas", "Refried Beans", "Salsa", "Nacho Chips", "Jalapenos", "Green Peppers", "Monterey Jack Cheese", "Rice", "Ground Beef", "Eggs" };
 CString currentInventory[] = { "256", "402", "515", "712", "90,210", "1024", "32,767", "911", "420", "4450" };
@@ -116,7 +116,7 @@ BOOL C23SUProjectDlg::OnInitDialog()
 	// TODO: Add extra initialization here
 	if (IsDebuggerPresent())
 	{
-		m_strDebug = "Beware! Someone is picking you apart with a debugger!";
+		m_strDebug = "Oooh, do you smell that? I think it's be a debugger!";
 		UpdateData(false);
 	}
 
@@ -259,28 +259,66 @@ int C23SUProjectDlg::ValidationFunction()
 	int n = 0;
 	int ch;
 
+	//
+	// calculate check digit, positions - through len-1
+	// multiply even positions by 2, add to sum
+	// add odd positions to sum
+	// at end, mod 10 the sum
+	// subtract the remainder from 10
+	// the resulting value should equal last digit in number
+	// return the number, which will be the index into the
+	//  product and inventory arrays, else display message
+	//  and return -1
+	//
 	for (int x = 0; x < m_strProductNumber.GetLength() - 1; x++)
 	{
 		ch = m_strProductNumber.GetAt(x) - '0';
 		if (x % 2 == 0)
-		{
-			n = ch * 2;
-			if (n > 9) n -= 9;
-			sum += n;
-		}
+			sum += CalcEven(ch);
 		else
-		{
-			sum += ch;
-		}
+			sum += CalcOdd(ch);
 	}
 
-	n = sum % 10;
-	ch = m_strProductNumber.GetAt(m_strProductNumber.GetLength() - 1) - '0';
-
-	if (10 - n == ch)
+	ch = (m_strProductNumber.GetAt(m_strProductNumber.GetLength() - 1)) - '0';
+	if (CalcCheckDigit(sum) == ch)
 		return(ch);
 
 	MessageBox("Oh no mi amigo, that is not a valid product number, retry, por favor", MSGBOX_TITLE);
 
 	return(-1);
+}
+
+
+int C23SUProjectDlg::CalcOdd(int digitIn)
+{
+	// TODO: Add your implementation code here.
+	int n;
+
+	n = digitIn * 1;
+
+	return(n);
+}
+
+
+int C23SUProjectDlg::CalcEven(int digitIn)
+{
+	// TODO: Add your implementation code here.
+	int n;
+
+	n = digitIn * 2;
+	if (n > 9) n -= 9;
+	
+	return(n);
+}
+
+
+int C23SUProjectDlg::CalcCheckDigit(int sumIn)
+{
+	// TODO: Add your implementation code here.
+	int n; 
+
+	n = sumIn % 10;
+
+	return(10 - n);
+
 }
